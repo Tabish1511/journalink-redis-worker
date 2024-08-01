@@ -17,7 +17,11 @@ const redis_1 = require("redis");
 const dotenv_1 = __importDefault(require("dotenv"));
 dotenv_1.default.config({ path: ".env" });
 const http_1 = __importDefault(require("http"));
-const server = http_1.default.createServer();
+const requestHandler = (request, response) => {
+    response.writeHead(200, { 'Content-Type': 'text/plain' });
+    response.end('Hello, World!\n');
+};
+const server = http_1.default.createServer(requestHandler);
 const client = (0, redis_1.createClient)({
     url: process.env.EXTERNAL_REDIS_URL,
 });

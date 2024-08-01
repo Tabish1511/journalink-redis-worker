@@ -4,7 +4,12 @@ import dotenv from 'dotenv';
 dotenv.config({ path: ".env" });
 import http from 'http';
 
-const server = http.createServer();
+const requestHandler = (request: http.IncomingMessage, response: http.ServerResponse) => {
+    response.writeHead(200, { 'Content-Type': 'text/plain' });
+    response.end('Hello, World!\n');
+  };  
+
+const server = http.createServer(requestHandler);
 
 const client = createClient({
   url: process.env.EXTERNAL_REDIS_URL,
