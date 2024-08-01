@@ -7,8 +7,6 @@ const client = createClient({
   url: process.env.EXTERNAL_REDIS_URL,
 });
 
-console.log('EXTERNAL_REDIS_URL:', process.env.EXTERNAL_REDIS_URL);
-
 // const prisma = new PrismaClient();
 
 async function processMessage(message: string) {
@@ -33,9 +31,6 @@ async function startWorker() {
     while (true) {
       try {
         const messageData = await client.brPop("newMessages", 0);
-
-        console.log('Message received in BG WORKER:', messageData);
-
         //@ts-ignore
         if (messageData.element) {
           //@ts-ignore
