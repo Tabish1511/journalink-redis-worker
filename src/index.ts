@@ -1,8 +1,10 @@
-// import { PrismaClient } from '@prisma/client';
+import { PrismaClient } from '@prisma/client';
 import { createClient } from 'redis';
 import dotenv from 'dotenv';
 dotenv.config({ path: ".env" });
 import http from 'http';
+
+const prisma = new PrismaClient();
 
 const requestHandler = (request: http.IncomingMessage, response: http.ServerResponse) => {
     response.writeHead(200, { 'Content-Type': 'text/plain' });
@@ -15,15 +17,15 @@ const client = createClient({
   url: process.env.EXTERNAL_REDIS_URL,
 });
 
-// const prisma = new PrismaClient();
+console.log('redis Worker started:', process.env.EXTERNAL_REDIS_URL);
 
 async function processMessage(message: string) {
   try {
-    // await prisma.message.create({
-    //   data: {
-    //     content: message,
-    //   },
-    // });
+    await prisma.message.create({
+      data: {
+        content: message,
+      },
+    });
     console.log('Message saved to database');
   } catch (error) {
     console.error('Error saving message to database:', error);
@@ -42,7 +44,7 @@ async function startWorker() {
         //@ts-ignore
         if (messageData.element) {
           //@ts-ignore
-          await processMessage(messageData[1]);
+          await processMessage(messageData.element);
           console.log('Message processed in BG WORKER');
         } else {
           console.log('NO MESSAGE IN BG WORKER');
@@ -58,4 +60,4 @@ async function startWorker() {
 
 startWorker();
 
-server.listen(3000);
+server.listen(4000);

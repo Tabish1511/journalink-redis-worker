@@ -12,11 +12,12 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-// import { PrismaClient } from '@prisma/client';
+const client_1 = require("@prisma/client");
 const redis_1 = require("redis");
 const dotenv_1 = __importDefault(require("dotenv"));
 dotenv_1.default.config({ path: ".env" });
 const http_1 = __importDefault(require("http"));
+const prisma = new client_1.PrismaClient();
 const requestHandler = (request, response) => {
     response.writeHead(200, { 'Content-Type': 'text/plain' });
     response.end('Hello, World!\n');
@@ -25,15 +26,15 @@ const server = http_1.default.createServer(requestHandler);
 const client = (0, redis_1.createClient)({
     url: process.env.EXTERNAL_REDIS_URL,
 });
-// const prisma = new PrismaClient();
+console.log('redis Worker started:', process.env.EXTERNAL_REDIS_URL);
 function processMessage(message) {
     return __awaiter(this, void 0, void 0, function* () {
         try {
-            // await prisma.message.create({
-            //   data: {
-            //     content: message,
-            //   },
-            // });
+            yield prisma.message.create({
+                data: {
+                    content: message,
+                },
+            });
             console.log('Message saved to database');
         }
         catch (error) {
@@ -52,7 +53,7 @@ function startWorker() {
                     //@ts-ignore
                     if (messageData.element) {
                         //@ts-ignore
-                        yield processMessage(messageData[1]);
+                        yield processMessage(messageData.element);
                         console.log('Message processed in BG WORKER');
                     }
                     else {
@@ -70,4 +71,4 @@ function startWorker() {
     });
 }
 startWorker();
-server.listen(3000);
+server.listen(4000);
