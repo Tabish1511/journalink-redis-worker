@@ -16,10 +16,11 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const redis_1 = require("redis");
 const dotenv_1 = __importDefault(require("dotenv"));
 dotenv_1.default.config({ path: ".env" });
+const http_1 = __importDefault(require("http"));
+const server = http_1.default.createServer();
 const client = (0, redis_1.createClient)({
     url: process.env.EXTERNAL_REDIS_URL,
 });
-console.log('EXTERNAL_REDIS_URL:', process.env.EXTERNAL_REDIS_URL);
 // const prisma = new PrismaClient();
 function processMessage(message) {
     return __awaiter(this, void 0, void 0, function* () {
@@ -44,7 +45,6 @@ function startWorker() {
             while (true) {
                 try {
                     const messageData = yield client.brPop("newMessages", 0);
-                    console.log('Message received in BG WORKER:', messageData);
                     //@ts-ignore
                     if (messageData.element) {
                         //@ts-ignore
@@ -66,3 +66,4 @@ function startWorker() {
     });
 }
 startWorker();
+server.listen(3000);
