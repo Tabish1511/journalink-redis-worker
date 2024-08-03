@@ -9,6 +9,9 @@ const prisma = new PrismaClient();
 const requestHandler = (request: http.IncomingMessage, response: http.ServerResponse) => {
     response.writeHead(200, { 'Content-Type': 'text/plain' });
     response.end('Hello, World!\n');
+    response.setHeader('Access-Control-Allow-Origin', '*'); // Or specify 'http://localhost:3000' instead of '*'
+    response.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS');
+    response.setHeader('Access-Control-Allow-Headers', 'Content-Type');
   };  
 
 const server = http.createServer(requestHandler);

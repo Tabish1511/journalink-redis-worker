@@ -21,6 +21,9 @@ const prisma = new client_1.PrismaClient();
 const requestHandler = (request, response) => {
     response.writeHead(200, { 'Content-Type': 'text/plain' });
     response.end('Hello, World!\n');
+    response.setHeader('Access-Control-Allow-Origin', '*'); // Or specify 'http://localhost:3000' instead of '*'
+    response.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS');
+    response.setHeader('Access-Control-Allow-Headers', 'Content-Type');
 };
 const server = http_1.default.createServer(requestHandler);
 const client = (0, redis_1.createClient)({
