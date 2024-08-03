@@ -19,17 +19,23 @@ dotenv_1.default.config({ path: ".env" });
 const http_1 = __importDefault(require("http"));
 const prisma = new client_1.PrismaClient();
 const requestHandler = (request, response) => {
-    response.writeHead(200, { 'Content-Type': 'text/plain' });
-    response.end('Hello, World!\n');
+    // Set CORS headers
     response.setHeader('Access-Control-Allow-Origin', '*'); // Or specify 'http://localhost:3000' instead of '*'
     response.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS');
     response.setHeader('Access-Control-Allow-Headers', 'Content-Type');
+    if (request.method === 'OPTIONS') {
+        response.writeHead(204);
+        response.end();
+        return;
+    }
+    response.writeHead(200, { 'Content-Type': 'text/plain' });
+    response.end('Hello, World!\n');
 };
 const server = http_1.default.createServer(requestHandler);
 const client = (0, redis_1.createClient)({
     url: process.env.EXTERNAL_REDIS_URL,
 });
-console.log('redis Worker started:', process.env.EXTERNAL_REDIS_URL);
+console.log('redis Worker started');
 function processMessage(message) {
     return __awaiter(this, void 0, void 0, function* () {
         try {
